@@ -595,9 +595,9 @@ module JSON
           if schema_uri.relative?
             # Check for absolute path
             if schema[0,1] == '/'
-              schema_uri = URI.parse("file://#{schema}")
+              schema_uri = escape_uri_parse("file://#{schema}")
             else
-              schema_uri = URI.parse("file://#{Dir.pwd}/#{schema}")
+              schema_uri = escape_uri_parse("file://#{Dir.pwd}/#{schema}")
             end
           end
           if Validator.schemas[schema_uri.to_s].nil?
@@ -640,9 +640,9 @@ module JSON
         json_uri = URI.parse(data)
         if json_uri.relative?
           if data[0,1] == '/'
-            json_uri = URI.parse("file://#{data}")
+            json_uri = escape_uri_parse("file://#{data}")
           else
-            json_uri = URI.parse("file://#{Dir.pwd}/#{data}")
+            json_uri = escape_uri_parse("file://#{Dir.pwd}/#{data}")
           end
         end
         data = JSON::Validator.parse(open(json_uri.to_s).read)
@@ -654,9 +654,9 @@ module JSON
             json_uri = URI.parse(data)
             if json_uri.relative?
               if data[0,1] == '/'
-                json_uri = URI.parse("file://#{data}")
+                json_uri = escape_uri_parse("file://#{data}")
               else
-                json_uri = URI.parse("file://#{Dir.pwd}/#{data}")
+                json_uri = escape_uri_parse("file://#{Dir.pwd}/#{data}")
               end
             end
             data = JSON::Validator.parse(open(json_uri.to_s).read)
@@ -669,5 +669,8 @@ module JSON
       data
     end
 
+    def escape_uri_parse(uri_string)
+      URI.unescape(URI.parse(URI.escape(uri_string)).to_s)
+    end
   end
 end
